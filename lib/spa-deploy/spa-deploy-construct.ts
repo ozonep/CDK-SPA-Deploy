@@ -1,5 +1,8 @@
 import { Construct } from 'constructs';
 import {
+  CfnOutput, RemovalPolicy, aws_s3_deployment as s3deploy, aws_s3 as s3, Annotations,
+} from 'aws-cdk-lib';
+import {
   CloudFrontWebDistribution,
   ViewerCertificate,
   OriginAccessIdentity,
@@ -15,9 +18,6 @@ import { HostedZone, ARecord, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { DnsValidatedCertificate, Certificate, ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { HttpsRedirect } from 'aws-cdk-lib/aws-route53-patterns';
 import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
-import {
-  CfnOutput, RemovalPolicy, aws_s3_deployment as s3deploy, aws_s3 as s3, Annotations,
-} from 'aws-cdk-lib';
 
 export interface SPADeployConfig {
   readonly indexDoc:string,
