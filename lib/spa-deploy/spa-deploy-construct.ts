@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import {
   CloudFrontWebDistribution,
   ViewerCertificate,
@@ -6,18 +7,15 @@ import {
   SSLMethod,
   SecurityPolicyProtocol,
   CloudFrontWebDistributionProps,
-} from '@aws-cdk/aws-cloudfront';
+} from 'aws-cdk-lib/aws-cloudfront';
 import {
   PolicyStatement, Role, AnyPrincipal, Effect,
-} from '@aws-cdk/aws-iam';
-import { HostedZone, ARecord, RecordTarget } from '@aws-cdk/aws-route53';
-import { DnsValidatedCertificate, Certificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
-import { HttpsRedirect } from '@aws-cdk/aws-route53-patterns';
-import { CloudFrontTarget } from '@aws-cdk/aws-route53-targets';
-import cdk = require('@aws-cdk/core');
-import s3deploy= require('@aws-cdk/aws-s3-deployment');
-import s3 = require('@aws-cdk/aws-s3');
-import { RemovalPolicy } from '@aws-cdk/core';
+} from 'aws-cdk-lib/aws-iam';
+import { HostedZone, ARecord, RecordTarget } from 'aws-cdk-lib/aws-route53';
+import { DnsValidatedCertificate, Certificate, ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
+import { HttpsRedirect } from 'aws-cdk-lib/aws-route53-patterns';
+import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
+import { CfnOutput, RemovalPolicy, aws_s3_deployment as s3deploy, aws_s3 as s3 } from 'aws-cdk-lib';
 
 export interface SPADeployConfig {
   readonly indexDoc:string,
@@ -62,10 +60,10 @@ export interface SPADeploymentWithCloudFront extends SPADeployment {
   readonly distribution: CloudFrontWebDistribution,
 }
 
-export class SPADeploy extends cdk.Construct {
+export class SPADeploy extends Construct {
     globalConfig: SPAGlobalConfig;
 
-    constructor(scope: cdk.Construct, id:string, config?:SPAGlobalConfig) {
+    constructor(scope: Construct, id:string, config?:SPAGlobalConfig) {
       super(scope, id);
 
       if (typeof config !== 'undefined') {
@@ -250,7 +248,7 @@ export class SPADeploy extends cdk.Construct {
         cfnOutputConfig.exportName = config.exportWebsiteUrlName;
       }
 
-      new cdk.CfnOutput(this, 'URL', cfnOutputConfig);
+      new CfnOutput(this, 'URL', cfnOutputConfig);
 
       return { websiteBucket };
     }
@@ -273,7 +271,7 @@ export class SPADeploy extends cdk.Construct {
         role: config.role,
       });
 
-      new cdk.CfnOutput(this, 'cloudfront domain', {
+      new CfnOutput(this, 'cloudfront domain', {
         description: 'The domain of the website',
         value: distribution.distributionDomainName,
       });
