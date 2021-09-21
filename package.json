@@ -23,17 +23,6 @@
       "python": {
         "distName": "cdk-spa-deploy",
         "module": "spa_deploy"
-      },
-      "java": {
-        "package": "com.cdkpatterns",
-        "maven": {
-          "groupId": "com.cdkpatterns",
-          "artifactId": "CDKSPADeploy"
-        }
-      },
-      "dotnet": {
-        "namespace": "com.cdkpatterns",
-        "packageId": "CDKSPADeploy"
       }
     }
   },
