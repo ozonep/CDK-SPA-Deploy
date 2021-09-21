@@ -16,7 +16,7 @@ import { DnsValidatedCertificate, Certificate, ICertificate } from 'aws-cdk-lib/
 import { HttpsRedirect } from 'aws-cdk-lib/aws-route53-patterns';
 import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
 import {
-  CfnOutput, RemovalPolicy, aws_s3_deployment as s3deploy, aws_s3 as s3,
+  CfnOutput, RemovalPolicy, aws_s3_deployment as s3deploy, aws_s3 as s3, Annotations,
 } from 'aws-cdk-lib';
 
 export interface SPADeployConfig {
@@ -110,7 +110,7 @@ export class SPADeploy extends Construct {
 
       if (this.globalConfig.ipFilter === true && isForCloudFront === false) {
         if (typeof this.globalConfig.ipList === 'undefined') {
-          this.node.addError('When IP Filter is true then the IP List is required');
+          Annotations.of(this).addError('When IP Filter is true then the IP List is required');
         }
 
         const bucketPolicy = new PolicyStatement();
@@ -209,6 +209,7 @@ export class SPADeploy extends Construct {
       }
 
       if (typeof cert === 'undefined' && config.certificateARN) {
+        // eslint-disable-next-line no-param-reassign
         cert = Certificate.fromCertificateArn(this, 'Certificate', config.certificateARN);
       }
 
@@ -244,7 +245,7 @@ export class SPADeploy extends Construct {
 
       if (config.exportWebsiteUrlOutput === true) {
         if (typeof config.exportWebsiteUrlName === 'undefined' || config.exportWebsiteUrlName === '') {
-          this.node.addError('When Output URL as AWS Export property is true then the output name is required');
+          Annotations.of(this).addError('When Output URL as AWS Export property is true then the output name is required');
         }
         cfnOutputConfig.exportName = config.exportWebsiteUrlName;
       }

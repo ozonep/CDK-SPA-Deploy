@@ -41,6 +41,7 @@
     "twitter": "nideveloper"
   },
   "devDependencies": {
+    "@aws-cdk/assert": "^2.0.0-rc.21",
     "aws-cdk-lib": "^2.0.0-rc.21",
     "constructs": "^10.0.5",
     "@types/jest": "^26.0.24",

@@ -1,10 +1,10 @@
 import {
   expect as expectCDK, haveResource, haveResourceLike, haveOutput,
 } from '@aws-cdk/assert';
-import * as cf from '@aws-cdk/aws-cloudfront';
-import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { BlockPublicAccess } from '@aws-cdk/aws-s3';
-import { Stack, App } from '@aws-cdk/core';
+import * as cf from 'aws-cdk-lib/aws-cloudfront';
+import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { BlockPublicAccess } from 'aws-cdk-lib/aws-s3';
+import { Stack, App } from 'aws-cdk-lib';
 import { SPADeploy } from '../lib';
 
 test('Cloudfront Distribution Included', () => {
