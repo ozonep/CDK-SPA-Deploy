@@ -56,9 +56,8 @@ test('Cloudfront Distribution Included', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: 's3:GetObject'
-          ,
-          Effect: 'Allow'
+          Action: 's3:GetObject',
+          Effect: 'Allow',
         }],
     },
   }));
@@ -116,7 +115,7 @@ test('Cloudfront Distribution Included - with non-default error-doc cfg set', ()
       Statement: [
         {
           Action: 's3:GetObject',
-          Effect: 'Allow'
+          Effect: 'Allow',
         }],
     },
   }));
@@ -156,7 +155,6 @@ test('Cloudfront With Custom Cert and Aliases', () => {
   }));
 });
 
-
 test('Cloudfront With Custom Role', () => {
   const stack = new Stack();
   // WHEN
@@ -167,20 +165,19 @@ test('Cloudfront With Custom Role', () => {
     websiteFolder: 'website',
     certificateARN: 'arn:1234',
     cfAliases: ['www.test.com'],
-    role: new Role(stack, 'myRole', {roleName: 'testRole', assumedBy: new ServicePrincipal('lambda.amazonaws.com')})
+    role: new Role(stack, 'myRole', { roleName: 'testRole', assumedBy: new ServicePrincipal('lambda.amazonaws.com') }),
   });
 
   // THEN
   expectCDK(stack).to(haveResource('AWS::Lambda::Function', {
     Role: {
-      "Fn::GetAtt": [
-        "myRoleE60D68E8",
-        "Arn"
-      ]
-    }
+      'Fn::GetAtt': [
+        'myRoleE60D68E8',
+        'Arn',
+      ],
+    },
   }));
 });
-
 
 test('Basic Site Setup', () => {
   const stack = new Stack();
@@ -258,17 +255,17 @@ test('Basic Site Setup with Custom Role', () => {
     indexDoc: 'index.html',
     errorDoc: 'error.html',
     websiteFolder: 'website',
-    role: new Role(stack, 'myRole', {roleName: 'testRole', assumedBy: new ServicePrincipal('lambda.amazonaws.com')}),
+    role: new Role(stack, 'myRole', { roleName: 'testRole', assumedBy: new ServicePrincipal('lambda.amazonaws.com') }),
   });
 
   // THEN
   expectCDK(stack).to(haveResource('AWS::Lambda::Function', {
     Role: {
-      "Fn::GetAtt": [
-        "myRoleE60D68E8",
-        "Arn"
-      ]
-    }
+      'Fn::GetAtt': [
+        'myRoleE60D68E8',
+        'Arn',
+      ],
+    },
   }));
 
   expectCDK(stack).to(haveResourceLike('AWS::S3::BucketPolicy', {
@@ -281,22 +278,22 @@ test('Basic Site Setup with Custom Role', () => {
         },
         {
           Action: [
-            "s3:GetObject*",
-            "s3:GetBucket*",
-            "s3:List*",
-            "s3:DeleteObject*",
-            "s3:PutObject*",
-            "s3:Abort*"
+            's3:GetObject*',
+            's3:GetBucket*',
+            's3:List*',
+            's3:DeleteObject*',
+            's3:PutObject*',
+            's3:Abort*',
           ],
           Condition: {
             StringEquals: {
-              "aws:PrincipalArn": {
-                "Fn::GetAtt": [
-                  "myRoleE60D68E8",
-                  "Arn"
-                ]
-              }
-            }
+              'aws:PrincipalArn': {
+                'Fn::GetAtt': [
+                  'myRoleE60D68E8',
+                  'Arn',
+                ],
+              },
+            },
           },
           Effect: 'Allow',
           Principal: '*',
@@ -304,7 +301,6 @@ test('Basic Site Setup with Custom Role', () => {
     },
   }));
 });
-
 
 test('Basic Site Setup with Undefined Role', () => {
   const stack = new Stack();
@@ -316,21 +312,20 @@ test('Basic Site Setup with Undefined Role', () => {
     indexDoc: 'index.html',
     errorDoc: 'error.html',
     websiteFolder: 'website',
-    role: undefined
+    role: undefined,
   });
 
   // THEN
   expectCDK(stack).to(haveResource('AWS::Lambda::Function', {
-    Runtime: "python3.6",
+    Runtime: 'python3.6',
     Role: {
-      "Fn::GetAtt": [
-        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
-        "Arn"
-      ]
-    }
+      'Fn::GetAtt': [
+        'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265',
+        'Arn',
+      ],
+    },
   }));
 });
-
 
 test('Basic Site Setup, Encrypted Bucket', () => {
   const stack = new Stack();
@@ -623,7 +618,7 @@ test('Create From Hosted Zone', () => {
       Statement: [
         {
           Action: 's3:GetObject',
-          Effect: 'Allow'
+          Effect: 'Allow',
         }],
     },
   }));
@@ -674,18 +669,18 @@ test('Create From Hosted Zone with Custom Role', () => {
       indexDoc: 'index.html',
       errorDoc: 'error.html',
       websiteFolder: 'website',
-      role: new Role(stack, 'myRole', {roleName: 'testRole', assumedBy: new ServicePrincipal('lambda.amazonaws.com')})
+      role: new Role(stack, 'myRole', { roleName: 'testRole', assumedBy: new ServicePrincipal('lambda.amazonaws.com') }),
     });
 
   // THEN
-  
+
   expectCDK(stack).to(haveResource('AWS::Lambda::Function', {
     Role: {
-      "Fn::GetAtt": [
-        "myRoleE60D68E8",
-        "Arn"
-      ]
-    }
+      'Fn::GetAtt': [
+        'myRoleE60D68E8',
+        'Arn',
+      ],
+    },
   }));
 });
 

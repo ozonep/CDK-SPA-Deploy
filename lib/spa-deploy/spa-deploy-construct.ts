@@ -15,7 +15,9 @@ import { HostedZone, ARecord, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { DnsValidatedCertificate, Certificate, ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { HttpsRedirect } from 'aws-cdk-lib/aws-route53-patterns';
 import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
-import { CfnOutput, RemovalPolicy, aws_s3_deployment as s3deploy, aws_s3 as s3 } from 'aws-cdk-lib';
+import {
+  CfnOutput, RemovalPolicy, aws_s3_deployment as s3deploy, aws_s3 as s3,
+} from 'aws-cdk-lib';
 
 export interface SPADeployConfig {
   readonly indexDoc:string,
@@ -122,27 +124,27 @@ export class SPADeploy extends Construct {
         bucket.addToResourcePolicy(bucketPolicy);
       }
 
-      //The below "reinforces" the IAM Role's attached policy, it's not required but it allows for customers using permission boundaries to write into the bucket.
+      // The below "reinforces" the IAM Role's attached policy, it's not required but it allows for customers using permission boundaries to write into the bucket.
       if (config.role) {
         bucket.addToResourcePolicy(
-            new PolicyStatement({
-              actions: [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*"
-              ],
-              effect: Effect.ALLOW,
-              resources: [bucket.arnForObjects('*'), bucket.bucketArn],
-              conditions: {
-                StringEquals: {
-                  'aws:PrincipalArn': config.role.roleArn,
-                },
+          new PolicyStatement({
+            actions: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+              's3:DeleteObject*',
+              's3:PutObject*',
+              's3:Abort*',
+            ],
+            effect: Effect.ALLOW,
+            resources: [bucket.arnForObjects('*'), bucket.bucketArn],
+            conditions: {
+              StringEquals: {
+                'aws:PrincipalArn': config.role.roleArn,
               },
-              principals: [new AnyPrincipal()]
-            })
+            },
+            principals: [new AnyPrincipal()],
+          }),
         );
       }
 
@@ -150,26 +152,25 @@ export class SPADeploy extends Construct {
     }
 
     /**
-     * Helper method that returns an s3deploy.ISource, 
-     * it accepts either config.websiteFolder as a path to a local .zip file or a directory 
+     * Helper method that returns an s3deploy.ISource,
+     * it accepts either config.websiteFolder as a path to a local .zip file or a directory
      * or as an s3 url pointing to .zip file
-     * @param config 
+     * @param config
      * @returns s3deploy.ISource
      */
-    private getSource(config:SPADeployConfig): s3deploy.ISource{
-      
+    private getSource(config:SPADeployConfig): s3deploy.ISource {
       const websiteBucket = this.getS3Bucket(config, false);
-      let source: s3deploy.ISource | undefined = undefined
-      
+      let source: s3deploy.ISource | undefined;
+
       const isS3Url = new RegExp('s3://.*.zip$');
-      if (isS3Url.test(config.websiteFolder)){
-        let key = config.websiteFolder.split(websiteBucket.bucketName + "/")[1]
-        source = s3deploy.Source.bucket(websiteBucket, key)
-      }else{
-        source = s3deploy.Source.asset(config.websiteFolder)
+      if (isS3Url.test(config.websiteFolder)) {
+        const key = config.websiteFolder.split(`${websiteBucket.bucketName}/`)[1];
+        source = s3deploy.Source.bucket(websiteBucket, key);
+      } else {
+        source = s3deploy.Source.asset(config.websiteFolder);
       }
 
-      return source
+      return source;
     }
 
     /**
@@ -199,12 +200,12 @@ export class SPADeploy extends Construct {
         }],
       };
 
-      const aliases: string[] = []
+      const aliases: string[] = [];
       if (typeof config.cfAliases !== 'undefined') {
         aliases.push(...config.cfAliases);
       }
       if (typeof config.zoneName !== 'undefined') {
-          aliases.push(config.subdomain ? `${config.subdomain}.${config.zoneName}` : config.zoneName);
+        aliases.push(config.subdomain ? `${config.subdomain}.${config.zoneName}` : config.zoneName);
       }
 
       if (typeof cert === 'undefined' && config.certificateARN) {
@@ -213,12 +214,12 @@ export class SPADeploy extends Construct {
 
       if (typeof cert !== 'undefined') {
         cfConfig.viewerCertificate = ViewerCertificate.fromAcmCertificate(cert, {
-            aliases,
-            securityPolicy: config.securityPolicy,
-            sslMethod: config.sslMethod,
-            });
+          aliases,
+          securityPolicy: config.securityPolicy,
+          sslMethod: config.sslMethod,
+        });
       } else {
-        cfConfig.viewerCertificate = ViewerCertificate.fromCloudFrontDefaultCertificate(...aliases)
+        cfConfig.viewerCertificate = ViewerCertificate.fromCloudFrontDefaultCertificate(...aliases);
       }
 
       return cfConfig;
@@ -229,7 +230,7 @@ export class SPADeploy extends Construct {
      */
     public createBasicSite(config:SPADeployConfig): SPADeployment {
       const websiteBucket = this.getS3Bucket(config, false);
-      
+
       new s3deploy.BucketDeployment(this, 'BucketDeployment', {
         sources: [this.getSource(config)],
         role: config.role,
@@ -313,10 +314,10 @@ export class SPADeploy extends Construct {
 
       if (!config.subdomain) {
         new HttpsRedirect(this, 'Redirect', {
-            zone,
-            recordNames: [`www.${config.zoneName}`],
-            targetDomain: config.zoneName,
-        });          
+          zone,
+          recordNames: [`www.${config.zoneName}`],
+          targetDomain: config.zoneName,
+        });
       }
 
       return { websiteBucket, distribution };
