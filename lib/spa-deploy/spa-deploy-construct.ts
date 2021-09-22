@@ -10,6 +10,9 @@ import {
   SSLMethod,
   SecurityPolicyProtocol,
   CloudFrontWebDistributionProps,
+  Function,
+  FunctionCode,
+  FunctionEventType
 } from 'aws-cdk-lib/aws-cloudfront';
 import {
   PolicyStatement, Role, AnyPrincipal, Effect,
@@ -179,6 +182,9 @@ export class SPADeploy extends Construct {
      * Helper method to provide configuration for cloudfront
      */
     private getCFConfig(websiteBucket:s3.Bucket, config:any, accessIdentity: OriginAccessIdentity, cert?:ICertificate): CloudFrontWebDistributionProps {
+      const securityHeaders = new Function(this, 'securityHeaders', {
+        code: FunctionCode.fromFile({ filePath: `${__dirname}/headers.js` }),
+      });
       const cfConfig:any = {
         originConfigs: [
           {
@@ -186,7 +192,13 @@ export class SPADeploy extends Construct {
               s3BucketSource: websiteBucket,
               originAccessIdentity: accessIdentity,
             },
-            behaviors: config.cfBehaviors ? config.cfBehaviors : [{ isDefaultBehavior: true }],
+            behaviors: config.cfBehaviors ? config.cfBehaviors : [{
+              isDefaultBehavior: true,
+              functionAssociations: [{
+                function: securityHeaders,
+                eventType: FunctionEventType.VIEWER_RESPONSE,
+              }],
+            }],
           },
         ],
         // We need to redirect all unknown routes back to index.html for angular routing to work
