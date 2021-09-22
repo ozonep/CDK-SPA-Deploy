@@ -31,6 +31,7 @@ export interface SPADeployConfig {
   readonly blockPublicAccess?:s3.BlockPublicAccess
   readonly sslMethod?: SSLMethod,
   readonly securityPolicy?: SecurityPolicyProtocol,
+  readonly memoryLimit?: number,
   readonly role?:Role,
   readonly bucketRemovalPolicy?: RemovalPolicy,
 }
@@ -45,6 +46,7 @@ export interface HostedZoneConfig extends Partial<SPADeployConfig> {
   readonly role?: Role,
   readonly sslMethod?: SSLMethod,
   readonly securityPolicy?: SecurityPolicyProtocol,
+  readonly memoryLimit?: number
 }
 
 export interface SPAGlobalConfig {
@@ -236,6 +238,7 @@ export class SPADeploy extends Construct {
         sources: [this.getSource(config)],
         role: config.role,
         destinationBucket: websiteBucket,
+        memoryLimit: config.memoryLimit,
       });
 
       const cfnOutputConfig:any = {
@@ -271,6 +274,7 @@ export class SPADeploy extends Construct {
         distribution,
         distributionPaths: ['/', `/${config.indexDoc}`],
         role: config.role,
+        memoryLimit: config.memoryLimit,
       });
 
       new CfnOutput(this, 'cloudfront domain', {
@@ -305,6 +309,7 @@ export class SPADeploy extends Construct {
         distribution,
         role: config.role,
         distributionPaths: ['/', `/${config.indexDoc}`],
+        memoryLimit: config.memoryLimit,
       });
 
       new ARecord(this, 'Alias', {
