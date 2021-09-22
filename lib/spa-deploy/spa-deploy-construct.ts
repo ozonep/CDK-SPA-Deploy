@@ -192,8 +192,9 @@ export class SPADeploy extends Construct {
               s3BucketSource: websiteBucket,
               originAccessIdentity: accessIdentity,
             },
-            behaviors: config.cfBehaviors ? config.cfBehaviors : [{
+            behaviors: [{
               isDefaultBehavior: true,
+              ...config?.cfBehaviors[0],
               functionAssociations: [{
                 function: securityHeaders,
                 eventType: FunctionEventType.VIEWER_RESPONSE,
